@@ -32,10 +32,14 @@ GameStates.Preloader.prototype = {
 
 
         this.load.spritesheet('switch', 'images/settings/switch.png', 126, 64);
+        this.load.spritesheet('explosion', 'images/explosion.png', 256, 256);
 
 
         this.load.spritesheet('player', 'images/player.png', 136, 213);
 		this.load.image('bullet', 'images/laser.png');
+        this.load.image('enemy.avion', 'images/enemies/avion.png');
+        this.load.image('enemy.soucoupe', 'images/enemies/soucoupe.png');
+        this.load.image('shield', 'images/shield.png');
 
         this.load.image('health.bg', 'images/game/health-bg.png');
         this.load.image('health.bar', 'images/game/health-bar.png');
@@ -51,8 +55,11 @@ GameStates.Preloader.prototype = {
         this.load.image('score', 'images/game/score.png');
         this.load.image('ammo', 'images/game/ammo.png');
 
+        this.load.audio('explosion', 'sounds/explosion.wav');
         this.load.audio('laser', 'sounds/laser.wav');
-        this.load.audio('music', 'sounds/music.wav');
+        this.load.audio('music.intro', 'sounds/music-intro.wav');
+        this.load.audio('music.loop', 'sounds/music-loop.wav');
+
     },
 
     create: function () {

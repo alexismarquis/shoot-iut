@@ -10,12 +10,16 @@ GameStates.Boot.prototype = {
 
         this.input.maxPointers = 1;
 
+        if (!this.game.device.desktop) {
+            this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+        }
 
-        this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
         this.scale.pageAlignHorizontally = true;
         this.scale.pageAlignVertically = true;
 
-        this.scale.fullScreenScaleMode = Phaser.ScaleManager.EXACT_FIT;
+
+            this.scale.fullScreenScaleMode = Phaser.ScaleManager.EXACT_FIT;
+
 
     },
 
