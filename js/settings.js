@@ -54,6 +54,10 @@ GameStates.Settings.prototype = {
         this.btn.input.enableDrag();
         this.btn.input.allowVerticalDrag = false;
 
+        var progress = parseFloat(localStorage.getItem('volume'));
+        this.setSlider(progress);
+
+        this.btn.x = this.bar.x + progress * this.bar.width;
 
 
     },
@@ -81,8 +85,16 @@ GameStates.Settings.prototype = {
 
         var progress = (this.btn.x - this.bar.x) / (width);
 
-        this.progressBar.crop(new Phaser.Rectangle(0, 0, progress * width, this.progressBar.height));
+        this.setSlider(progress)
 
+    },
+
+    setSlider: function(progress) {
+        console.log(progress);
+        var width = this.bar.width - this.btn.width;
+
+        this.progressBar.crop(new Phaser.Rectangle(0, 0, progress * width, this.progressBar.height));
+        localStorage.setItem('volume', progress.toFixed(2));
 
     }
 

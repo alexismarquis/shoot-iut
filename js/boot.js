@@ -7,7 +7,7 @@ GameStates.Boot = function (game) {
 GameStates.Boot.prototype = {
 
     init: function () {
-
+        if(!localStorage.getItem('volume')) localStorage.setItem('volume', .5);
         this.input.maxPointers = 1;
 
         if (!this.game.device.desktop) {

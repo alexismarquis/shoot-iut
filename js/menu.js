@@ -23,19 +23,33 @@ GameStates.MainMenu.prototype = {
             this.showMenu();
         }
 
+
+
     },
 
     showMenu: function () {
+
+        var music = this.add.audio('music.menu');
+        music.volume = localStorage.getItem('volume');
+        music.loop = true;
+        music.play();
+
+
         this.add.sprite(250, 100, 'logo');
         campagneButton = this.add.button(100, 650, 'campagneButton', function() {
+            music.stop();
             this.state.start('Game');
         }, this, 1, 0, 2);
         arcadeButton = this.add.button(500, 650, 'arcadeButton', function() {
+            music.stop();
             this.state.start('Game');
         }, this, 1, 0, 2);
         optionsButton = this.add.button(900, 650, 'optionsButton', function() {
+            music.stop();
             this.state.start('Settings');
         }, this, 1, 0, 2);
+
+
 
     },
 

@@ -59,6 +59,7 @@ GameStates.Preloader.prototype = {
         this.load.audio('laser', 'sounds/laser.wav');
         this.load.audio('music.intro', 'sounds/music-intro.wav');
         this.load.audio('music.loop', 'sounds/music-loop.wav');
+        this.load.audio('music.menu', 'sounds/music-menu.wav');
 
     },
 
