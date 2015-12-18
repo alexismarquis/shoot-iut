@@ -25,10 +25,13 @@ GameStates.Preloader.prototype = {
 
         this.load.image('logo', 'images/logo.png');
         this.load.image('settingsWindow', 'images/windows/settings_background.png');
+        this.load.image('scoreboard', 'images/scoreboard.png');
+
         this.load.spritesheet('campagneButton', 'images/buttons/campagne.png', 300, 64);
         this.load.spritesheet('arcadeButton', 'images/buttons/arcade.png', 300, 64);
         this.load.spritesheet('optionsButton', 'images/buttons/options.png', 300, 64);
         this.load.spritesheet('backButton', 'images/buttons/back.png', 300, 64);
+        this.load.spritesheet('replayButton', 'images/buttons/replay.png', 300, 64);
 
 
         this.load.spritesheet('switch', 'images/settings/switch.png', 126, 64);
@@ -36,15 +39,21 @@ GameStates.Preloader.prototype = {
 
 
         this.load.spritesheet('player', 'images/player.png', 136, 213);
-		this.load.image('bullet', 'images/laser.png');
+        this.load.image('bullet', 'images/laser.png');
+		this.load.image('rocket', 'images/rocket.png');
         this.load.image('enemy.avion', 'images/enemies/avion.png');
         this.load.image('enemy.soucoupe', 'images/enemies/soucoupe.png');
+        this.load.image('powerup.health', 'images/powerups/health.png');
         this.load.image('shield', 'images/shield.png');
 
         this.load.image('health.bg', 'images/game/health-bg.png');
         this.load.image('health.bar', 'images/game/health-bar.png');
         this.load.image('energy.bg', 'images/game/energy-bg.png');
         this.load.image('energy.bar', 'images/game/energy-bar.png');
+
+
+        this.load.image('textInput', 'images/text-input.png');
+        this.load.image('backgroundTest', 'images/backgroundTest.png');
 
 
 
@@ -55,7 +64,9 @@ GameStates.Preloader.prototype = {
         this.load.image('score', 'images/game/score.png');
         this.load.image('ammo', 'images/game/ammo.png');
 
-        this.load.audio('explosion', 'sounds/explosion.wav');
+        this.load.audio('sound.explosion', 'sounds/explosion.mp3');
+        this.load.audio('sound.rocket', 'sounds/rocket.mp3');
+        this.load.audio('sound.shield', 'sounds/shield.mp3');
         this.load.audio('laser', 'sounds/laser.wav');
         this.load.audio('music.intro', 'sounds/music-intro.wav');
         this.load.audio('music.loop', 'sounds/music-loop.wav');

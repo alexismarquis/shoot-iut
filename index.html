@@ -17,6 +17,7 @@
 <body>
 	<div style="font-family: SaranaiGame;width:0;height:0;overflow:hidden;">.</div>
 	<div id="gameContainer"></div>
+    <script src="js/lib/jquery-2.1.4.min.js"></script>
     <script src="js/lib/phaser.min.js"></script>
     <script src="js/boot.js"></script>
     <script src="js/preloader.js"></script>
@@ -26,6 +27,7 @@
     <script src="js/levels.js"></script>
     <script src="js/weapons.js"></script>
     <script src="js/enemies.js"></script>
+    <script src="js/end.js"></script>
 	<script>
 		(function() {
 			var game = new Phaser.Game(1280, 800, Phaser.AUTO, "gameContainer");
@@ -34,6 +36,7 @@
 			game.state.add("Preloader", GameStates.Preloader);
 			game.state.add("MainMenu", GameStates.MainMenu);
 			game.state.add("Game", GameStates.Game);
+			game.state.add("GameEnd", GameStates.GameEnd);
 			game.state.add("Settings", GameStates.Settings);
 
 			game.state.start("Boot");

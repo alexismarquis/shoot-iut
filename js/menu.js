@@ -35,11 +35,15 @@ GameStates.MainMenu.prototype = {
         music.play();
 
 
-        this.add.sprite(250, 100, 'logo');
+        this.add.sprite(50, 140, 'logo');
+        this.add.sprite(800, 100, 'scoreboard');
+
+
         campagneButton = this.add.button(100, 650, 'campagneButton', function() {
-            music.stop();
-            this.state.start('Game');
-        }, this, 1, 0, 2);
+            //music.stop();
+            //this.state.start('Game');
+        }, this, 3, 3, 3);
+
         arcadeButton = this.add.button(500, 650, 'arcadeButton', function() {
             music.stop();
             this.state.start('Game');
@@ -49,6 +53,24 @@ GameStates.MainMenu.prototype = {
             this.state.start('Settings');
         }, this, 1, 0, 2);
 
+
+        var style = {
+            font: "24px SaranaiGame",
+            fill: "#f4a222"
+        }
+        
+        var game = this;
+
+        $.getJSON("http://localhost:8888/shoot-iut-server/scores", function(data) {
+            data.data.forEach(function(item, i) {
+                var y = 165 + i * 78;
+
+                game.add.text(830, y, i+1 + ')', style);
+                game.add.text(880, y, item.name, style);
+                var score = game.add.text(1180, y, item.score, style);
+                score.anchor.x = 1;
+            });
+        });
 
 
     },

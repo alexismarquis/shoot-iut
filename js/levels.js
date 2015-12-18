@@ -14,3 +14,19 @@ Level.space = {
 	}
 
 }
+
+
+
+Level.nowel = {
+	name: 'Nom',
+	background: 'backgroundTest',
+
+	aracade: function(score) {
+
+	},
+
+	campagin: function() {
+
+	}
+
+}

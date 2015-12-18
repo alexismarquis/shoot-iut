@@ -11,7 +11,7 @@ GameStates.Game.prototype = {
     },
 
 	create: function () {
-		this.loadLevel(Level.space);
+		this.background = this.add.sprite(0, 0, 'background');
 
 
 	    this.setupAudio();
@@ -19,14 +19,28 @@ GameStates.Game.prototype = {
 	    this.setupEnemies();
 	    this.setupBullets();
 	    this.setupExplosions();
+	    this.setupPowerUps();
 	    this.setupInterface();
 
+		this.loadLevel(Level.space);
 
 
         this.input.keyboard.addKeyCapture([ Phaser.Keyboard.SPACEBAR ]);
 
         var changeKey = this.input.keyboard.addKey(Phaser.Keyboard.ENTER);
-        changeKey.onDown.add(this.nextWeapon, this);
+        //changeKey.onDown.add(this.nextWeapon, this);
+        changeKey.onDown.add(function() {
+        	if(this.character.ammo > 0) {
+              	this.weapons[1].visible = true;
+        		if(this.weapons[1].fire(this.player)) {
+        			this.soundRocket.play();
+        			this.character.removeAmmo();	
+        		}
+        	}
+
+        }, this);
+
+        this.test = true;
 
 
         this.character = {
@@ -35,9 +49,19 @@ GameStates.Game.prototype = {
         	displayedHealth: 100,
         	maxEnergy: 1000,
         	energy: 1000,
+        	ammo: 3,
+        	maxAmmo: 3,
         	ghostUntil: null,
         	alive: function() {
         		return this.health > 0;
+        	},
+        	addAmmo: function() {
+        		this.ammo ++;
+        		if(this.ammo > this.maxAmmo) this.ammo = this.maxAmmo;
+        	},
+        	removeAmmo: function() {
+        		this.ammo --;
+		        if(this.ammo < 0) this.ammo = 0;
         	},
         	addHealth: function(amount) {
         		this.health += amount;
@@ -64,6 +88,9 @@ GameStates.Game.prototype = {
 
 		this.filter.update();
 		this.background.filters = [this.filter];*/
+
+		this.nextLevel = this.time.now + 60000;
+		this.nextRocket = this.time.now + 10000;
 
     },
 
@@ -93,6 +120,28 @@ GameStates.Game.prototype = {
     	} else if(this.character.health < this.character.displayedHealth) {
     		this.character.displayedHealth--;
     	}
+
+
+    	if (this.character.ghostUntil && this.character.ghostUntil < this.time.now) {
+
+		  this.character.ghostUntil = null;
+		  this.player.frame = 0;
+		}
+
+		if(this.nextLevel <= this.time.now) {
+			this.nextLevel = this.time.now + 60000;
+
+			if(this.test) this.loadLevel(Level.nowel);
+			else this.loadLevel(Level.space);
+
+			this.test = !this.test;
+		}
+
+		if(this.nextRocket <= this.time.now) {
+			this.nextRocket = this.time.now + 10000;
+			this.character.addAmmo();
+		}
+
     },
 
 	setupExplosions: function () {
@@ -130,7 +179,7 @@ GameStates.Game.prototype = {
 	    if (this.nextEnemyAt < this.time.now && this.enemyPool.countDead() > 0) {
 	       this.nextEnemyAt = this.time.now + this.enemyDelay;
 	       var enemy = this.enemyPool.getFirstExists(false);
-	       enemy.reset(1280, this.rnd.integerInRange(80, 720), this.enemyInitialHealth);
+	       enemy.reset(1280, this.rnd.integerInRange(80, 715), this.enemyInitialHealth);
 	       enemy.body.velocity.x = -this.rnd.integerInRange(30, 60);
 	     }
 
@@ -144,6 +193,8 @@ GameStates.Game.prototype = {
     setupPlayer: function() {
 
         this.weapons.push(new Weapon.SingleBullet(this.game));
+        this.weapons.push(new Weapon.Missile(this.game));
+
 
         this.currentWeapon = 0;
 
@@ -152,7 +203,7 @@ GameStates.Game.prototype = {
             this.weapons[i].visible = false;
         }
 
-        this.player = this.add.sprite(80, 80, 'player');
+        this.player = this.add.sprite(80, 160, 'player');
         this.physics.arcade.enable(this.player);
         this.player.body.collideWorldBounds = true;
         this.player.body.gravity.y = 800;
@@ -164,18 +215,29 @@ GameStates.Game.prototype = {
 		this.sound = this.add.audio('laser');
 		this.sound.volume = volume; // To improve
 
-		var intro = this.add.audio('music.intro');
-		intro.volume = volume;
+		this.soundRocket = this.add.audio('sound.rocket');
+		this.soundRocket.volume = volume / 3; // To improve
 
-		var loop = this.add.audio('music.loop');
-		loop.loop = true;
-		loop.volume = volume;
+		this.soundShield = this.add.audio('sound.shield');
+		this.soundShield.volume = volume / 5; // To improve
 
-		intro.onStop.add(function(sound) {
-			loop.play();
+		this.soundExplosion = this.add.audio('sound.explosion');
+		this.soundExplosion.volume = volume; // To improve
+
+		this.music = this.add.audio('music.intro');
+		this.music.volume = volume;
+
+
+
+		this.music.onStop.add(function(sound) {
+			this.intro = this.add.audio('music.loop');
+			this.intro.loop = true;
+			this.intro.volume = volume;
+			this.intro.play();
 		}, this);
 
-		intro.play();
+		this.music.play();
+
     },
 
     setupInterface: function() {
@@ -316,7 +378,7 @@ GameStates.Game.prototype = {
 	},
 
 	updateInterface: function() {
-        this.ammoText.setText(0);
+        this.ammoText.setText(this.character.ammo);
 
         this.healthBar.crop(new Phaser.Rectangle(0, 0, (this.character.displayedHealth / this.character.maxHealth) * this.barWidth, this.healthBar.height));
         this.energyBar.crop(new Phaser.Rectangle(0, 0, (this.character.energy / this.character.maxEnergy) * this.barWidth, this.energyBar.height));
@@ -334,7 +396,8 @@ GameStates.Game.prototype = {
 	 enemy.damage(damage);
 
 	 if (enemy.alive) {
-	   
+	   	    	this.soundShield.play();
+
 	    var sprite = this.add.sprite(0, 0, 'shield');
 		this.physics.arcade.enable(sprite);
 		sprite.reset(enemy.x, enemy.y);
@@ -351,6 +414,7 @@ GameStates.Game.prototype = {
 	 	enemy.kill();
 	    this.explode(enemy);
 	    this.addToScore(enemy.reward);
+        this.spawnPowerUp(enemy);
 	 }
 	},
 
@@ -359,7 +423,11 @@ GameStates.Game.prototype = {
 		
 
 		this.physics.arcade.overlap(
-			this.weapons[this.currentWeapon], this.enemyPool, this.enemyHit, null, this
+			this.weapons[0], this.enemyPool, this.enemyHit, null, this
+		);
+
+		this.physics.arcade.overlap(
+			this.weapons[1], this.enemyPool, this.enemyHit, null, this
 		);
 
 		// Collision joueur avec enemies
@@ -372,36 +440,35 @@ GameStates.Game.prototype = {
 		this.physics.arcade.overlap(
 			this.player, this.enemyBulletPool, this.playerHit, null, this
 		);
-
+*/
 		// Collision joueur avec bonus
 		this.physics.arcade.overlap(
 			this.player, this.powerUpPool, this.playerPowerUp, null, this
 		);
 
-	*/
+	
 	},
 
 	enemyHit: function(bullet, enemy) {
 		bullet.kill();
-	    this.damageEnemy(enemy, 1);
+	    this.damageEnemy(enemy, bullet.damage);
 	},
 
   playerHit: function (player, enemy) {
   	if (!this.character.ghostUntil || this.character.ghostUntil < this.time.now) {
-  		console.log(this.character.ghostUntil - this.time.now);
 
 	    this.damageEnemy(enemy, 5);
-	    this.character.removeHealth(10);
+	    this.character.removeHealth(25);
 
 	    if (this.character.alive()) {
 	      this.character.ghostUntil = this.time.now + 3000;
+	      this.player.frame = 1;
 
 	      //this.player.play('ghost');
 	    } else {
 	      this.explode(player);
 	      player.kill();
-	      //this.displayEnd(false);
-	      alert('dead');
+	      this.end();
 	    }
 	} 
   },
@@ -413,6 +480,7 @@ GameStates.Game.prototype = {
      var explosion = this.explosionPool.getFirstExists(false);
      explosion.reset(sprite.x + sprite.width/2, sprite.y);
      explosion.play('boom', 45, false, true);
+     this.soundExplosion.play();
      // add the original sprite's velocity to the explosion
      explosion.body.velocity.x = sprite.body.velocity.x;
      explosion.body.velocity.y = sprite.body.velocity.y;
@@ -420,7 +488,53 @@ GameStates.Game.prototype = {
 
 
   loadLevel: function(level) {
-	this.background = this.add.sprite(0, 0, level.background);
-  }
+  	this.player.reset(80, 160);
+
+  	this.enemyPool.forEach(function (o) {
+        o.kill();
+    }, this, false);
+
+     
+	this.background.loadTexture(level.background);
+  },
+
+
+  end: function() {
+  		this.music.stop();
+  		this.intro.stop();
+	    this.state.start('GameEnd', true, false, this.score);
+  },
+
+
+  setupPowerUps: function () {
+
+	this.powerUpPool = this.add.group();
+	this.powerUpPool.enableBody = true;
+	this.powerUpPool.physicsBodyType = Phaser.Physics.ARCADE;
+	this.powerUpPool.createMultiple(5, 'powerup.health');
+	this.powerUpPool.setAll('anchor.x', 0.5);
+	this.powerUpPool.setAll('anchor.y', 0.5);
+	this.powerUpPool.setAll('outOfBoundsKill', true);
+	this.powerUpPool.setAll('checkWorldBounds', true);
+	this.powerUpPool.setAll('reward', 10, false, false, 0, true);
+
+	},
+
+	spawnPowerUp: function (enemy) {
+ 
+     if (this.rnd.frac() < enemy.dropRate) {
+       var powerUp = this.powerUpPool.getFirstExists(false);
+       powerUp.reset(enemy.x, enemy.y);
+       if(enemy.y > 400) powerUp.body.velocity.y = -100;
+       else powerUp.body.velocity.y = 100;
+       powerUp.body.velocity.x = -50;
+     }
+  	},
+
+  	playerPowerUp: function (player, powerUp) {
+  		this.addToScore(10);
+     this.character.addHealth(powerUp.reward);
+     powerUp.kill();
+  },
 
 };

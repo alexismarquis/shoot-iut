@@ -31,7 +31,7 @@ GameStates.Settings.prototype = {
             fill: "#66c8ff"
         }
         
-        this.add.text(425, 300, "Musique", style);
+        this.add.text(425, 300, "Volume", style);
 
         this.add.text(425, 400, "Plein ecran", style);
 
@@ -90,7 +90,6 @@ GameStates.Settings.prototype = {
     },
 
     setSlider: function(progress) {
-        console.log(progress);
         var width = this.bar.width - this.btn.width;
 
         this.progressBar.crop(new Phaser.Rectangle(0, 0, progress * width, this.progressBar.height));
